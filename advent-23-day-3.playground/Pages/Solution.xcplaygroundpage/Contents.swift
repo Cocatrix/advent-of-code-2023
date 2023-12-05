@@ -1,7 +1,7 @@
 /// The interesting file is this one
 import Foundation
 
-resolvePartOne(Launcher.puzzleInput)
+resolvePartTwo(Launcher.puzzleInput)
 
 func resolvePartOne(_ input: [String]) {
     
@@ -13,10 +13,10 @@ func resolvePartOne(_ input: [String]) {
 
 func resolvePartTwo(_ input: [String]) {
     
-    // TODO: Solve
-    
+    let result = giveValidGearSum(lines: input)
+
     D.log(D.solution, newlines: true)
-    print()
+    print(result)
 }
 
 enum EnginePart {
@@ -114,3 +114,49 @@ func giveValidNumberSum(lines: [String]) -> Int {
     let validNumbers = filterNumbersWithNeighborSymbols(from: engineParts, nbLines: lines.count)
     return sum(parts: validNumbers)
 }
+
+func giveValidGearSum(lines: [String]) -> Int {
+    var engineParts: [EnginePart] = []
+    for (index, line) in lines.enumerated() {
+        engineParts.append(contentsOf: parse(line: line, lineNumber: index))
+    }
+    let validNumbers = filterGears(from: engineParts)
+    return productSum(parts: validNumbers)
+}
+
+func filterGears(from parts: [EnginePart]) -> [(EnginePart, EnginePart)] {
+    return parts.compactMap {
+        switch $0 {
+            case .symbol(let xS, let yS):
+                var partsCopy = parts
+                partsCopy.removeAll(where: { part in
+                    switch part {
+                        case .number(let x, let y, _, let nbDigits):
+                            return !isNeighbor(x, y, xS, yS, nbDigits)
+                        default:
+                            return true
+                    }
+                })
+                if partsCopy.count > 1 {
+                    return (partsCopy[0], partsCopy[1])
+                } else {
+                    return nil
+                }
+            default:
+                return nil
+        }
+    }
+}
+
+func productSum(parts: [(EnginePart, EnginePart)]) -> Int {
+    let result = parts.reduce(0, { (accu, part) in
+        switch part {
+            case (.number(_, _, let numberValue1, _), .number(_, _, let numberValue2, _)):
+                return accu + numberValue1 * numberValue2
+            default:
+                return accu
+        }
+    })
+    return result
+}
+
