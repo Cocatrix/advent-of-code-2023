@@ -1,5 +1,7 @@
 # advent-of-code-2023
 
+I'm stopping for this year - at least in December. I really like this challenge but it takes too much time for me
+
 Let's have fun
 
 Private leaderboards where I'm included:
